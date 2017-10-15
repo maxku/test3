@@ -1,0 +1,80 @@
+<div style="display:block; margin-bottom:20px;">
+    @if ($record && $record->image)
+        <img src="/pics/{{$record->image}}?t={{time()}}"
+             style="display:block; margin:auto;"/>
+    @else
+        <img src="/pics/no_img.png"/>
+    @endif
+</div>
+<div class="form-group required" id="form-title-error">
+    {!! Form::label("title","Title *",["class"=>"control-label col-md-3"]) !!}
+    <div class="col-md-6">
+        {!! Form::text("title",null,["class"=>"form-control required"]) !!}
+        <span id="title-error" class="help-block"></span>
+    </div>
+</div>
+<div class="form-group required" id="form-desc-error">
+    {!! Form::label("desc","Description *",["class"=>"control-label col-md-3"]) !!}
+    <div class="col-md-6">
+        {!! Form::textarea("desc",null,["class"=>"form-control required"]) !!}
+        <span id="desc-error" class="help-block"></span>
+    </div>
+</div>
+<div class="form-group required" id="form-image-error">
+    {!! Form::label("image","Image",["class"=>"control-label col-md-3"]) !!}
+    <div class="col-md-6">
+        {!! Form::file("image",null,["class"=>"form-control required"]) !!}
+        <span id="image-error" class="help-block"></span>
+    </div>
+</div>
+
+<div class="form-group">
+    <div class="col-md-6 col-md-push-3">
+        <a href="javascript:ajaxLoad('/admin/list')" class="btn btn-danger"><i
+                    class="glyphicon glyphicon-backward"></i>
+            Back</a>
+        {!! Form::button("<i class='glyphicon glyphicon-floppy-disk'></i> Save",["type" => "submit","class"=>"btn
+    btn-primary"])!!}
+    </div>
+</div>
+<script>
+    $("#frm").submit(function (event) {
+        event.preventDefault();
+        var form = $(this);
+        var data = new FormData($(this)[0]);
+        var url = form.attr("action");
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+            async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                if (data.fail) {
+                    $('#frm input.required, #frm textarea.required').each(function () {
+                        index = $(this).attr('id');
+                        if (index in data.errors) {
+                            $("#form-" + index + "-error").addClass("has-error");
+                            $("#" + index + "-error").html(data.errors[index]);
+                        }
+                        else {
+                            $("#form-" + index + "-error").removeClass("has-error");
+                            $("#" + index + "-error").empty();
+                        }
+                    });
+                    $('#focus').focus().select();
+                } else {
+                    $(".has-error").removeClass("has-error");
+                    $(".help-block").empty();
+                    ajaxLoad(data.url, data.content);
+                }
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                alert(errorThrown);
+            }
+        });
+        return false;
+    });
+</script>

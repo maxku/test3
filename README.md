@@ -1,4 +1,6 @@
 # test3
+Live-version: http://maxku-test.000webhostapp.com/
+
 Написать простенькую CMS на фреймворке Laravel 5.3 +.
 
 Админ часть:
